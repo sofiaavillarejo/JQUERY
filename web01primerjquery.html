@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    .azul {
+        color: blue;
+    }
+
+</style>
+<body>
+    <!-- COMENTARIOS: CONTROL + K + C
+        DESCOMENTAR: CONTROL + K +U -->
+
+    <h1>Selectores JQuery</h1>
+    <button id="boton1">Pulsar para algo...</button>
+    <h2 class="azul">Soy un título azul</h2>
+    <button class="azul">Botón azul</button>
+    <p>Apendiendo Jquery 1</p>
+    <p>Apendiendo Jquery 2</p>
+    <p>Apendiendo Jquery 3</p>
+
+    <script src="js/jquery-3.7.1.js"></script>
+    <script>
+        //CÓDIGO JQUERY
+        //LA PRIMERA LÍNEA DE JQUERY -> ACCIONES AL CARGAR LA PÁG.
+        $(document).ready(function(){
+            //alert("mi primera app!!!");
+
+            //selector de etiqueta html
+            $("h1").hide(); //ocultar
+            $("#boton1").show(); //mostrar
+
+            //ASOCIAR ACCIONES A OBJETOS
+            $("p").click(function(){
+                //IMPRESCINDIBLE -> LANZAR MENSAJES EN CONSOLA
+                console.log("Mostrando mensaje en Consola Web"); 
+                //PALABRA CLAVE -> this (hace referencia al objeto que ha realizado la llamada al método)
+                //this = objeto que ha llamado al método >(en este caso es la p)
+                $(this).hide();
+            
+            
+            $("#boton1").click(function(){
+                 alert("Soy un boton");
+            })
+            })
+
+        })
+    </script>
+</body>
+</html>

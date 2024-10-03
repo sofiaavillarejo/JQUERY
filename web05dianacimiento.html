@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>¿Qué día de la semana era?</h1>
+    <label for="">Dia:</label>
+    <input type="text" id="dia"/>
+    <label for="">Mes:</label>
+    <input type="text" id="mes"/>
+    <label for="">Año:</label>
+    <input type="text" id="anio"/>
+    <button id="btn">Mostrar dia de la semana</button>
+    <h1 id="result"></h1>
+
+    <script src="js/jquery-3.7.1.js"></script>
+    <script>
+        $(document).ready(function(){
+            var result = ""
+
+            $("#btn").click(function(){
+                var dia = parseInt($("#dia").val());
+                var mes = parseInt($("#mes").val());
+                var anio = parseInt($("#anio").val());
+                console.log(dia, mes, anio);
+
+                if ( mes == 1){
+                    mes = 13;
+                    anio = anio - 1;
+                }
+
+                if ( mes == 2){
+                    mes = 14;
+                    anio--; //anio -=2; resta de 2 en 2
+                }
+
+                var op1 = ((mes + 1) * 3) / 5;
+                console.log(op1);
+
+                var op2 = anio / 4;
+                console.log(op2);
+
+                var op3 = anio / 100;
+                console.log(op3);
+
+                var op4 = anio / 400;
+                console.log(op4);
+
+                var op5 = dia + (mes * 2) + anio + op1 + op2 - op3 + op4 + 2;
+                console.log(op5);
+
+                var op6 = op5 % 7; //aqui me quedo con el resto
+                console.log(op6);
+
+                //!SI EN VEZ DE TRUNCA HAGO PARSEINT, EN ESTE LENGUAJE LO TRUNCA
+                var op7 = Math.trunc(op6); //truncar para que no coja decimales y salga distinto el dia
+                console.log("Resultado de la op" + op7);
+
+                var semana = ["Sabado", "Domingo", "Lunes", "Martes", "Miercoles", "Jueves","Viernes"];
+ 
+                $("#result").text("Era "+semana[op7]); //al array, le paso el resultado de la operacion y saca el dia de la semana segun el orden que tienen en el array
+ 
+            })
+            
+        })
+
+    </script>
+</body>
+</html>
