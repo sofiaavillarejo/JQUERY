@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    img {
+        height: 150px;
+        width: 150px;
+    }
+</style>
+<body>
+    <h1>Generar imágenes</h1>
+    <input type="range" id="rango" min="1" max="20" value="1"/>
+    <span id="valorrango"></span>
+    <div id="contenedor"></div>
+
+
+    <script src="js/jquery-3.7.1.js"></script>
+    <script>
+        $(document).ready(function(){
+            $("#rango").change(function(){
+                var numImages = parseInt($(this).val());
+                $("#valorrango").text(numImages);
+                //CADA VEZ QUE EL INPUT CAMBIE, LIMPIAMOS EL CONTENEDOR DE IMAGENS PARA QUE SE ACTUALICE
+                $("#contenedor").text("");
+                //bucle que se repite hasta el numero que el usuario haya introducido
+                for (var i = 1; i <=numImages; i++){
+                    //creamos las imagenes con el bucle (tantas como el numero que haya introducido el usuario)
+                    var imagen = $("<img>", { "src" : "images/gato2.jpg" });
+                    //añadimos imagenes al contenedor -> a estas imagenes (imagen) se les llama OBJETO
+                    $("#contenedor").append(imagen);
+
+                    //OBJETO
+                    imagen.mouseover(function(){
+                        $(this).attr("src", "images/gato1.jpg");
+                    })
+                    imagen.mouseout(function(){
+                        $(this).attr("src", "images/gato2.jpg");
+                    })
+                }
+            });
+        });
+
+
+    </script>
+</body>
+</html>

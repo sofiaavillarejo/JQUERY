@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Generar botones</h1>
+    <div id="contenedor"></div>
+    <h1 id="resultado" style="color: brown;"></h1>
+
+    <script src="js/jquery-3.7.1.js"></script>
+    <script>
+        $(document).ready(function(){
+            //variable que guarda el numero para ir sumando segun clicas cada btn
+            var numero = 0;
+            //crear 10 btn dinamicamente
+            for (var i = 1; i < 10; i++){
+                // Genera un número entre 1 y 10
+                var randomNum = Math.round(Math.random() * 100) + 1; //el +1 es para que no empiece en 0
+                //crear btn y pasarle como texto el numero random
+                var btn = $("<button>", {"text": "Número" + randomNum, "value": randomNum});
+                //añadir btn al contenedor
+                $("#contenedor").append(btn);
+                
+                //evento a cada boton y se va añadiendo el valor de cada uno y se va sumando al anterior
+                btn.click(function(){
+                    console.log(numero);
+                    numero += parseInt($(this).val());
+                    $("#resultado").text(numero);
+                })
+            }
+            
+        })
+    </script>
+</body>
+</html>

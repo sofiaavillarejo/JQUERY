@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Controles dinamicos</h1>
+    <button>Pulsar para hacer algo...</button>
+    <div id="prueba"></div>
+    <!-- ----------------------------------------- -->
+
+     <!-- EVENTOS -->
+    <label>Introduzca un texto</label>
+    <input type="text" id="cajatexto" />
+    <button id="botongenerar">Generar control</button>
+
+    <div id="contenedor"></div>
+
+    <!-- ----------------------------------------- -->
+
+    <script src="js/jquery-3.7.1.js"></script>
+    <script>
+        $(document).ready(function() {
+            $("button").click(function(){
+                alert("boton pulsado");
+                $("#prueba").html("<button id='miboton' onclick='mostrarMensaje'>boton NUEVO</button>");
+            })
+
+            $("#miboton").click(function(){
+            //al hacer click, comprobamos que NO es dinamico porque aunque ya se haya creado, aqui no podemos capturarlo y no funciona
+            //ES UN DIBUJO -> NO SE PUEDE INTERACTUAR CON ÉL   
+                alert("boton NUEVO pulsado!!");
+            });
+
+            $("#botongenerar").click(function(){
+                var texto = $("#cajatexto").val();
+                //CREAMOS UN PARRAFO POR CADA PULSACION
+                //LO HACEMOS CON JQUERY PARA INCLUIR EL LISTENER
+
+                var parrafo = $("<p>", {"text": texto, "style": "color:red"});
+                
+                //AÑADIMOS AL CONTENEDOR
+                $("#contenedor").append(parrafo);
+
+                //INCLUIMOS UN EVENTO A CADA PARRAFO GENERADO
+                parrafo.click(function(){
+                    $(this).css("color", "blue");
+                    $(this).text("Pulsado!!!"); //al clicar en el texto que escriba el usuario, cambia a este en color azul
+                })
+            });
+
+            
+        });
+
+        //al ser codigo js, debe ir fuera porque el document.ready es jquery
+        function mostrarMensaje(){
+                alert("Boton NUEVO pulsado");
+        };
+
+
+    </script>
+</body>
+</html>

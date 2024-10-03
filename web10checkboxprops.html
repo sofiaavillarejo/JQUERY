@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Props con checkbox</h1>
+    <p>seleccione nº de checkbox</p>
+    <input type="range" id="rango" min="1" max="50" value="1" />
+    <span id="valorrango"></span>
+    <h1 style="color:blue" id="resultado">0</h1>
+    <div id="contenedor"></div>
+
+    <script src="js/jquery-3.7.1.js"></script>
+    <script>
+        $(document).ready(function(){
+            $("#rango").change(function(){
+                //guardamos el valor del input
+                var numeroElementos = parseInt($(this).val());
+                //pasamos como texto el numero introducido
+                $("#valorrango").text(numeroElementos);
+                //limpiamos contenedor
+                $("#contenedor").html("");
+                //generamos checkbox
+                for (var i  = 1; i <= numeroElementos; i++) {
+                    //generamos nº random para cada checkbox del 1 al 500
+                    var aleatorio = parseInt((Math.random() * 500)) + 1;
+                    //creamos checbox
+                    var chk = $("<input>", {"value" : aleatorio, "type" : "checkbox"});
+                    //creamos etiquetas con el valor de los nº random
+                    var label = $("<label>", {"text" : aleatorio});
+                    //añadimos ambos al div
+                    $("#contenedor").append(chk).append(label);
+
+                    chk.change(function(){
+                        // var resultado = parseInt($("#resultado").text());
+                        // var valor = parseInt($(this).val());
+                        //DEBEMOS PREGUNTAR POR EL VALUE DEL CHECKBOX PARA SUMAR O RESTAR
+                        // if ($(this).is(":checked") == true) {
+                        //     //si esta chekeado, sumamos el valor
+                        //     resultado += valor;
+                        // }else {
+                        //     //si no lo esta, lo restamos
+                        //     resultado -= valor;
+                        // }
+                        // $("#resultado").text(resultado);
+
+                        //se comenta lo de arriba para que funcione la version 2
+                        //VERSION 2 -> PODRIAMOS HACER LO MISMO CON UN EACH SIN PREGUNTAR
+                        //EL ESTADO DE LOS CHECKBOX, SINO RECORRIENDO LOS CHECKBOX CHEQUEADOS
+                        var resultado = 0;
+                        $("input[type='checkbox']:checked").each(function(){
+                            //cada elemento seleccionado
+                            console.log($(this).val());
+                            //se mete aqui el valor porque buscamos solo los chequeados, si dejo el de arriba se suma cada vez que se pulsa
+                            var valor = parseInt($(this).val());
+                            resultado += valor;
+                        });
+                        $("#resultado").text(resultado);
+
+                    });
+                }
+
+            })
+        });
+
+
+
+    </script>
+</body>
+</html>
