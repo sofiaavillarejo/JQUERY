@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Customers XML Service</h1>
+    <button id="botoncargarcustomers">Cargar Customers</button>
+    <select id="selectcustomers"></select>
+    <button id="btncargardptos">Cargar departamentos</button>
+    <h1 id="mensaje"></h1>
+
+    <script src="js/jquery-3.7.1.js"></script>
+    <script>
+        $(document).ready(function () {
+            //este no funciona porque es xmlns!!!!!
+            $("#botoncargarcustomers").click(function () { 
+                var url = "https://northwind.netcore.io/customers.xml";
+                $.get(url, function (data) { 
+                    console.log("Leyendo...");
+                    //PARA LEER XMLNS HAY QUE PONER \\ PARA ENCONTRAR LO QUE QUEREMOS
+                    var numElementos = $(data).find("d2p1\\:Customer").length;
+                    $("#mensaje").text("Elementos: " + numElementos);
+                    //RECORREMOS LOS CUSTOMERS
+                    $(data).find("d2p1\\:Customer").each(function () {  
+                        var contactName = $(this).find("d2p1\\:ContactName").text();
+                        console.log(contactName);
+                        var option = $("<option>", {"text": contactName});
+                        $("#selectcustomers").append(option);
+                    });
+
+                    //cuando cambie el select 
+                    //EN ESTE PUNTO ESTOY DENTRO DE DATA YA
+                    $("#selectcustomers").change(function(){
+                        //cojo el valor del select
+                        var customerseleccionado = $("#selectcustomers").val();
+                        //filtro -> busca en el apartado de data contactName lo que contenga el valor del select
+                        var filtro = "d2p1\\:ContactName:contains(" + customerseleccionado + ")";
+                        //vacio html
+                        var html = ""; 
+                        //aplico a data el filtro y por cada uno que encuentre, saca los valores que le pido
+                        //AQUI ME METO EN 
+                        $(data).find(filtro).each(function () {
+                            //saco el nodo padre que es el nodo del cliente seleccionado
+                            var nodopadre = $(this).parent();
+                            //saco su id
+                            var id = $(nodopadre).find("d2p1\\:Id").text();
+                            //saco su empresa
+                            var empresa = $(nodopadre).find("d2p1\\:CompanyName").text();
+                            //añado al html los datos que tengo
+                            html += "nombre: " + customerseleccionado + ", Id: " + id + ", Empresa: " + empresa;
+                        });
+                        //pinto los datos en el h1
+                        $("#mensaje").html(html);
+                    });
+                });
+            });
+                console.log("Después del servicio...");
+            });
+            
+            $("#btncargardptos").click(function () { 
+                var url = "https://apicruddepartamentosxml.azurewebsites.net/api/Departamentos";
+                $.get(url, function (data) { 
+                    console.log("Leyendo...");
+                    var numElementos = $(data).find("Departamento").length;
+                    $("#mensaje").text("Elementos: " + numElementos);
+                    console.log($(data).find("Departamento").text())
+                });
+                console.log("Después del servicio...");
+
+            });
+
+        //CORRECCIÓN
+        //el servicio nos ofrece uan url donde sale directamente los datos de un cliente
+        /* por lo tanto, guardamos el id del cliente y lo almacenamos en el option como value
+        Y después, creamos la nueva url pasandole el ide del cliente
+        -Hace el get con la nueva url (HACE EL GET PORQUE ADEMAS DE QUE ESTA FUERA DEL OTRO, ES UNA NUEVA URL) para sacar los datos y busca el nombre de la compañia y lo escribe en el h1
+        */
+
+
+
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Filtros XML</h1>
+    <label>Introduzca ID</label>
+    <input type="text" id="cajaid" />
+    <button id="btnbuscarattr">Buscar departamento</button>
+    <hr/>
+    <label>Introduzca localidad</label>
+    <input type="text" id="cajalocalidad" />
+    <button id="btnbuscarlocalidad">Buscar localidad</button>
+    <hr/>
+    <h1 id="mensaje" style="color: brown;"></h1>
+    <ul id="listadepartamentos"></ul>
+
+
+    <script src="js/jquery-3.7.1.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#btnbuscarattr").click(function () {
+                var id = $("#cajaid").val();
+
+                console.log("Anterior...");
+                $.get("documents/departamentos.xml", function (data) {
+                    console.log("Leyendo...");
+                        console.log(data);
+                        //PARA FILTRAR NECESITAMOS: DEPT[DEPT_NO=10]
+                        var filtro = "DEPT[DEPT_NO=" + id + "]"; //creamos el filtro
+                        //EL ID ES ÚNICO, POR LO QUE NO HACEMOS EACH
+                        var nododept = $(data).find(filtro).first(); //recupero el primero que salga segun el filtro aplicado
+                        var nombre = $(nododept).find("DNOMBRE").text(); //dentro ya del nodo, saco el nombre
+                        var local = $(nododept).find("LOC").text();
+                        
+                        $("#mensaje").text("Departamento: " + nombre + ", Localidad: " + local);
+                });
+            });
+            $("#btnbuscarlocalidad").click(function () {
+                var localidad = $("#cajalocalidad").val();
+                $("#listadepartamentos").html("");
+                console.log("Anterior...");
+                $.get("documents/departamentos.xml", function (data) {
+                    console.log("Leyendo...");
+                    //FILTRAR POR CONTENIDO LOCALIDAD -> LOC:contains(GIJON)
+                        console.log(data);
+                        var filtro = "LOC:contains(" + localidad + ")"; //creamos el filtro
+                        //LA LOCALIDAD NO ES ÚNICA, POR LO QUE HACEMOS EACH YA QUE SON VARIOS ELEMENTOS A RECORRER
+                        var html = "";
+                        //SI AL RECORRER EL CONJUNTO NO HAY DATOS (NO EXISTE EL DPTO), SACA UN MENSAJE
+                        if ($(data).find(filtro).length == 0){
+                            $("#mensaje").text("No existe ese departamento");
+                        } else {
+                            //limpiar texto por si acaso se ha buscado antes un dpto que no existe
+                            $("#mensaje").text("");
+                            $(data).find(filtro).each(function () {
+                                var contenido = $(this).text();
+                                console.log(contenido); //devuelve el nombre asi que tengo que ir al padre (nodo) y de ahí sacar el nombre o lo que quiera
+                                var nodopadre = $(this).parent();
+                                console.log(nodopadre);
+                                var id = $(nodopadre).attr("DEPT_NO");
+                                var nombre = $(nodopadre).find("DNOMBRE").text();
+                                html += "<li>ID: " + id + ", " + nombre + "</li>";
+                            });
+
+                            $("#listadepartamentos").html(html);
+                        };
+                        
+                       
+                });
+            });
+
+        });
+
+
+    </script>
+</body>
+</html>

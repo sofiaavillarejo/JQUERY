@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Clientes XML</h1>
+    <div id="contenedor"></div>
+    <div id="contenido"></div>
+    <script src="js/jquery-3.7.1.js"></script>
+    <script>
+        $(document).ready(function () {
+            var html = "";
+            $.get("https://apiclientesxml.azurewebsites.net/api/Clientes", function (data) {
+                $(data).find("Cliente").each(function(){
+                    var id = $(this).find("IdCliente").text();
+                    var nombres = $(this).find("Nombre").text();
+                    var email = $(this).find("Email").text();
+                    var imagen = $(this).find("Imagen").text();
+                    var btn = $("<button>", {"value": id, "text" : nombres, "data-email": email, "data-imagen": imagen});
+                    $("#contenedor").append(btn);
+                    
+                    $(btn).click(function(){
+                        console.log(btn.email);
+                        var email = $(this).data("email");
+                        var imagen = $(this).data("imagen");
+                        var imgWeb = $("<img>", {"src": imagen});
+                        console.log(imagen)
+                        $("#contenido").html("<p style='color:red; font-size: 60px'>" + nombres + "</p>" + "<p style='font-size: 20px'>" + email + "</p>");
+                        $("#contenido").append(imgWeb);
+                    })
+                });
+            });
+        });
+
+    </script>
+</body>
+</html>
