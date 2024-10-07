@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON</title>
+</head>
+<body>
+    <h1>Maestro detalle jugadores JSON</h1>
+    <select id="selectjugador"></select><br>
+    <div id="datosjugador"></div>
+
+
+    <script src="js/jquery-3.7.1.js"></script>
+    <script>
+        $(document).ready(function () {
+            //GETJSON
+            $.getJSON("documents/jugadores.json", function (data) {
+                console.log(data);
+                $.each(data.jugadores, function (index, jugador) { 
+                     var nombre = jugador.nombre;
+                     var option = $("<option>", {"text": nombre});
+                        $("#selectjugador").append(option);
+                });   
+            });
+
+            $("#selectjugador").change(function () { 
+                    console.log($(this).val());
+                    var name = $(this).val(); //importante que aqui sea val(), probamos con text() en clase y daba error
+                    //AJAX
+                    $.ajax({
+                        type: "GET",
+                        url: "documents/jugadores.json",
+                        success: function (data) {
+                            var html = "";
+                            $.each(data.jugadores, function (index, player) { 
+                                var playerName = player.nombre;
+                                if (playerName == name) {
+                                    var position = player.posicion;
+                                    var edad = player.edad;
+                                    var imagen = player.imagen;
+                                    html += "<h1 style='color:blue'>" + playerName + "</h1>";
+                                    html += "<h3>Posición: "+ position + ", Edad: " + edad + "</h3>";
+                                    html += "<img src='" + imagen + "' " + "style='width: 150px; height: 150px'/>";
+                                    console.log(html);
+                                    $("#datosjugador").html(html);
+                                }
+                            });
+                        }
+                    });
+            });
+        });
+    </script>
+</body>
+</html>

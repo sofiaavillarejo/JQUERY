@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD</title>
+</head>
+<body>
+    <h1>CRUD departamentos</h1>
+    <label>ID departamento</label>
+    <input type="text" id="cajaid" /><hr>
+    <label>Nombre departamento</label>
+    <input type="text" id="cajanombre" /><hr>
+    <label>Localidad</label>
+    <input type="text" id="cajalocalidad" /><hr>
+    <button id="btninsertar">Insertar</button>
+    <button id="btnupdate">Update</button>
+    <button id="btndelete">Delete</button><hr/>
+    <table id="tabladepartamentos" border="1" style="border-collapse: collapse; width: 50%; text-align: center;">
+        <thead style="background-color: antiquewhite;">
+            <tr>
+                <th>ID dpto</th>
+                <th>Nombre</th>
+                <th>Localidad</th>
+            </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+    <script src="js/jquery-3.7.1.js"></script>
+    <script>
+        var url = "https://apicruddepartamentosxml.azurewebsites.net/";
+
+        $(document).ready(function () {
+            loadDepartamentos();
+            //POST -> INSERTAR
+            $("#btninsertar").click(function () { 
+                var id = $("#cajaid").val();
+                var nombre = $("#cajanombre").val();
+                var localidad = $("#cajalocalidad").val();
+                //NECESITAMOS ALMACENAR LOS DATOS XML EN UNA VARIABLE
+                //COMO STRING Y SIN ESPACIOS
+                //al principio lo creamos aqui y despues, al crear la funcion de getDpto(), puedo borrarlo y dejar la siguiente línea
+                // var dataXML = "<Departamento>";
+                // dataXML += "<IdDepartamento>" + id + "</IdDepartamento>";
+                // dataXML += "<Nombre>" + nombre + "</Nombre>";
+                // dataXML += "<Localidad>" + localidad + "</Localidad>";
+                // dataXML += "</Departamento>";
+                var dataXML = getDepartamentosXML(id, nombre, localidad);
+
+                //GRACIAS A PINTAR LOS DATOS DESCUBRO QUE EL ERROR 400 ERA QUE NO HABIA PUESTO += EN EL ANTERIOR Y SOLO PINTABA EL ULTIMO
+                console.log(dataXML); //IMPORTANTE!!
+                var request = "api/Departamentos";
+
+                $.ajax({
+                    url: url + request,
+                    type: "POST", //INSERTAR     
+                    contentType: "text/xml",
+                    data: dataXML, //recogidos de la funcion getDep... con los datos introducidos por el usuario en los input
+                    success: function () {
+                        console.log("Insertado");
+                        loadDepartamentos();
+                    }
+                });
+            });
+            //PUT -> MODIFICAR
+            $("#btnupdate").click(function () { 
+                var id = $("#cajaid").val();
+                var nombre = $("#cajanombre").val();
+                var localidad = $("#cajalocalidad").val();
+                var dataXML = getDepartamentosXML(id, nombre, localidad); //metodo que recoge los datos introducidos por el usuario y los devuelve para usarlos
+                var request = "api/departamentos";
+                $.ajax({
+                    type: "PUT",
+                    url: url + request,
+                    data: dataXML,
+                    contentType: "text/xml",
+                    success: function () {
+                        console.log("Modificando...");
+                        loadDepartamentos(); //llamamos a departamentos para que cargue lo que sale tras modificar alguno
+                    }
+                });
+            });
+            //DELETE -> BORRAR
+            $("#btndelete").click(function () { 
+                var id = $("#cajaid").val();
+                var request = "api/departamentos/" + id; //accedo a los datos del id introducido por el usuario
+                $.ajax({
+                    type: "DELETE",
+                    url: url + request,
+                    //no se necesita lo demas porque solo vamos a borrar
+                    success: function (response) {
+                       console.log("eliminado");
+                       loadDepartamentos();//traigo los datos actualizados 
+                    }
+                });
+                
+            });
+        });
+
+        //le paso los datos del id, nombre y localidad definidos en doc.ready
+        function getDepartamentosXML(id, nombre,localidad){
+            var dataXML = "<Departamento>";
+                dataXML += "<IdDepartamento>" + id + "</IdDepartamento>";
+                dataXML += "<Nombre>" + nombre + "</Nombre>";
+                dataXML += "<Localidad>" + localidad + "</Localidad>";
+                dataXML += "</Departamento>";
+                return dataXML;
+        };
+
+        function loadDepartamentos(){
+            var request = "api/Departamentos"; //aqui no diferencia de mayusculas y minusculas (si pongo dpto con la d minúscula, saca los datos tambien)
+            $.get(url + request, function (data) {
+                console.log("leyendo el servicio...");
+                var html = ""; //variable para pintar los datos
+                $(data).find("Departamento").each(function(){
+                    var id = $(this).find("IdDepartamento").text();
+                    var nombre = $(this).find("Nombre").text();
+                    var localidad = $(this).find("Localidad").text();
+                    html += "<tr>";
+                    html+= "<td>" + id + "</td>";
+                    html += "<td>" + nombre + "</td>";
+                    html += "<td>" + localidad + "</td>";
+                    html += "</tr>";
+                });
+                $("#tabladepartamentos tbody").html(html);
+            } );
+        }
+    </script>
+</body>
+</html>

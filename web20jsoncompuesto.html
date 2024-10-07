@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Compuesto</title>
+</head>
+<body>
+    <h1>Documento JSON compuesto</h1>
+    <button id="btnload">Cargar datos</button>
+    <ul id="listaclientes"></ul>
+
+    <script src="js/jquery-3.7.1.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#btnload").click(function () { 
+                //getJSON y ajax es lo mismo se puede usar el que sea
+                $.ajax({
+                    type: "GET",
+                    url: "documents/clientes.json",
+                    dataType: "json",
+                    success: function (data) {
+                        console.log(data);
+                        var html = "";
+                        //coge la key "clientes" del objeto json del documento
+                        $.each(data.clientes, function (index, cliente) { 
+                             var nombre = cliente.nombre;
+                             html += "<li>Index: " + index + ", Cliente: " + nombre + "</li>";
+                        });
+                        $("#listaclientes").html(html);
+                    }
+                });
+                
+            });
+        });
+    </script>
+</body>
+</html>

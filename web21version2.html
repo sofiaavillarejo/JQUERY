@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Version 2</title>
+</head>
+<body>
+    <h1>Maestro detalle jugadores JSON</h1>
+    <select id="selectjugador"></select><br>
+    <div id="datosjugador"></div>
+
+    <script src="js/jquery-3.7.1.js"></script>
+    <script>
+        $(document).ready(function () {
+            var i = 0;
+            $.getJSON("documents/jugadores.json", function (data) {
+                console.log(data);
+                $.each(data.jugadores, function (index, jugador) { 
+                     var nombre = jugador.nombre;
+                     var option = $("<option>", {"text": nombre, "value": i});
+                        $("#selectjugador").append(option);
+                        i+= 1;
+                });   
+            });
+
+            $("#selectjugador").change(function () { 
+                //EXISTE UNA PROPIEDAD QUE ACCEDE AL INDICE DEL ELEMENTO SELECCIONADO DE UN SELECT
+                //selectedIndex -> es de JS
+                //si necesitamos una propiedad js desde un codigo jquery, usamos prop
+                var index = $("#selectjugador").prop("selectedIndex");
+                //var name = $(this).val();
+                $.ajax({
+                    type: "GET",
+                    url: "documents/jugadores.json",
+                    success: function(data){ 
+                        var html = ""; 
+                        var player = data.jugadores[index]; 
+                        var position = player.posicion; 
+                        var edad = player.edad; 
+                        var imagen = player.imagen; 
+                        html += "<h1 style='color:blue'>" 
+                        + name + "</h1>"; 
+                        html += "<h3>Posición: " + position 
+                        + ", Edad: " + edad + "</h3>"; 
+                        html += "<img src='" + imagen + "' " 
+                        + "style='width: 150px; height: 150px'/>"; 
+                        $("#datosjugador").html(html); 
+
+                    } 
+
+}) 
+
+ }) 
+
+ }) 
+    </script>
+</body>
+</html>
