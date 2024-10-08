@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD JSON</title>
+</head>
+<body>
+    <h1>CRUD DPTOS JSON</h1>
+    <label for="">Id dpto</label>
+    <input type="text" id="cajaid" /><br><br>
+    <label for="">Nombre dpto</label>
+    <input type="text" id="cajanombredpto" /><br><br>
+    <label for="">Localidad</label>
+    <input type="text" id="cajalocalidad" /><br><br>
+    <button id="btninsert">Insertar</button>
+    <button id="btnupdate">Modificar</button>
+    <button id="btndelete">Eliminar</button>
+    <hr>
+    <table id="tabladptos" border="1" style="border-collapse: collapse; width: 50%; text-align: center;">
+        <thead style="background-color: antiquewhite;">
+            <tr>
+                <th>Id dpto</th>
+                <th>Nombre</th>
+                <th>Localidad</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script src="js/jquery-3.7.1.js"></script>
+    <script>
+        var url = "https://apicruddepartamentoscore.azurewebsites.net/";
+        $(document).ready(function () {
+            loadDepartamentos();
+            $("#btninsert").click(function () { 
+                var id = $("#cajaid").val();
+                var nombre = $("#cajanombredpto").val();
+                var localidad = $("#cajalocalidad").val();
+                /*NECESITAMOS CREAR UN OBJETO QUE CONTENGA EL MISMO NOMBRE
+                DE PROPIEDADES DEL OBJETO JSON QUE RECIBIRÁ EL SERVICIO API */
+                var dpto = new Object();
+                dpto.numero = parseInt(id); //daba error al insertar porque el json, el numero es int y nosotros insertábamos en string
+                dpto.nombre = nombre;
+                dpto.localidad = localidad;
+                //CONVERTIMOS EL OBJETO JS A JSON
+                var dataJson = JSON.stringify(dpto);
+                var request = "api/Departamentos";
+                console.log(dataJson);
+
+                $.ajax({
+                    type: "POST",
+                    url: url + request,
+                    data: dataJson,
+                    contentType: "application/json",
+                    success: function () {
+                        console.log("Dpto insertado");
+                        loadDepartamentos();
+                    }
+                });
+            });
+
+            $("#btnupdate").click(function () { 
+                var id = parseInt($("#cajaid").val()); //da igual parsearlo aqui que como el anterior
+                var nombre = $("#cajanombredpto").val();
+                var localidad = $("#cajalocalidad").val();
+                var dpto = new Object();
+                dpto.numero = id;
+                dpto.nombre = nombre;
+                dpto.localidad = localidad;
+                var dataJson = JSON.stringify(dpto);
+                var request = "api/Departamentos";
+                $.ajax({
+                    type: "PUT",
+                    url: url + request,
+                    data: dataJson,
+                    contentType: "application/json",
+                    success: function (response) {
+                        console.log("Dpto modificado");
+                        loadDepartamentos();
+                    }
+                });
+            });
+
+            $("#btndelete").click(function () { 
+                var id = $("#cajaid").val();
+                var request = "api/Departamentos/" + id;
+                $.ajax({
+                    type: "DELETE",
+                    url:url + request,
+                    success: function (response) {
+                        console.log("Dpto eliminado");
+                        loadDepartamentos();
+                    }
+                });
+            });
+
+        });
+
+        function loadDepartamentos(){
+            var request = "api/Departamentos";
+            $.getJSON(url + request, function (data) {
+                console.log("Leyendo");
+                var html = "";
+                $.each(data, function (index, departamento) { 
+                    console.log(index); //indice de cada objeto (posicion)
+                    console.log(departamento) //trae cada objeto del json
+                    html += "<tr>";
+                        //se escriben como esten en el servicio
+                    html += "<td>" + departamento.numero + "</td>";
+                    html += "<td>" + departamento.nombre + "</td>";
+                    html += "<td>" + departamento.localidad + "</td>";
+                    html += "</tr>";
+                });
+                $("#tabladptos tbody").html(html);  
+            });
+        }
+    </script>
+</body>
+</html>

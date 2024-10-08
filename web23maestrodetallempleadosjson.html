@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAESTRO DETALLE DPTOS EMPLEADOS</title>
+</head>
+<style>
+    a {
+        text-decoration: underline;
+        letter-spacing: 0.2rem;
+        color: chocolate;
+        font-size: 20px;
+    }
+    a:hover {
+        background-color: antiquewhite;
+    }
+</style>
+<body>
+    <h1>Maestro detalle empleados departamento</h1>
+    <ul id="listasitios"></ul>
+    <table id="empleados" border="1" style="border-collapse: collapse; width: 50%;">
+        <thead style="background-color: antiquewhite;">
+            <tr>
+                <td id="ape">Apellido</td>
+                <td id="oficio">Oficio</td>
+                <td id="salario">Salario</td>
+                <td id="dpto"></a>Departamento</td>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <ul id="dptoempleados">
+
+    </ul>
+    <script src="js/jquery-3.7.1.js"></script>
+    <script>
+        var urlDpto = "https://apicruddepartamentoscore.azurewebsites.net/";
+        var urlEmple = "https://apiempleadosspgs.azurewebsites.net/"
+        $(document).ready(function () {
+            loadDepartamentos();
+        });
+
+        function loadDepartamentos(){
+            var request = "api/Departamentos";
+            $.getJSON(urlDpto + request,
+                function (data) {
+                    console.log(data);
+                    var html = ""; //esto ya no, ahora se sibuja de forma dinamica
+                    //CON ACCIONES (ESTO DE ABAJO); CON DIBUJOS -> var html = "";
+                    /* var li = $("<li>", {"text": "Empleados"})
+                        var link = $("<a>", { "text":"Empleados", "href":"#", "data-iddepartamento":departamento.numero});    
+                    */    
+                    $.each(data, function (index, departamento) { 
+                        html += "<li>" + departamento.nombre + " ➡️ <a href='#' onClick='mostrarEmpleados(" + departamento.numero + ")'>Empleados</a>" + "</li>";
+                    });
+                    $("#listasitios").html(html);
+                    /*link.append(link);
+                        $("#dptoempleados").append(li);
+                        link.click(function(){
+                            var idDpto = $(this).data("iddepartamento");
+                            ***etc...***
+                        })
+                    */
+                }
+            );
+        };
+
+        function mostrarEmpleados(dptoId){
+            console.log(dptoId);
+            var request = "api/Empleados/EmpleadosDepartamento/" + dptoId
+            $.getJSON(urlEmple + request, function (data) {
+                console.log(data);
+                var html = "";
+                $.each(data, function (index, empleado) { 
+                        html += "<tr>";
+                        html += "<td>" + empleado.apellido + "</td>";
+                        html += "<td>" + empleado.oficio + "</td>";
+                        html += "<td>" + empleado.salario + "</td>";
+                        html += "<td>" + empleado.departamento + "</td>";
+                        html += "</tr>";
+                    });
+                    $("#empleados tbody").html(html);  
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Empleados oficio</title>
+</head>
+<body>
+    <h1>Empleados oficio</h1>
+    <select id="selectoficio"></select><br>
+    <label>Incremento salarial:</label>
+    <input type="text" id="cajaincremento"/>
+    <button id="btnincremento">Incrementar salario</button>
+
+    <hr>
+    <table id="empleados" border="1" style="border-collapse: collapse; width: 50%;">
+        <thead style="background-color: antiquewhite;">
+            <tr>
+                <th>Apellido</th>
+                <th>Oficio</th>
+                <th>Salario</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script src="js/jquery-3.7.1.js"></script>
+    <script>
+        var url = "https://apiempleadosaction.azurewebsites.net/"
+        $(document).ready(function () {
+            loadOficios();
+            $("#selectoficio").change(function(){
+                var indiceSeleccionado = $(this).val();
+                console.log(indiceSeleccionado);
+                mostrardatostabla(indiceSeleccionado);
+            });
+
+            $("#btnincremento").click(function(){
+                var indiceSeleccionado = $("#selectoficio").val();
+                console.log("click");
+                //cojo el valor que ponga el usuario en el input
+                var incremento = $(this).val();
+                //llamo a la funcion de actulizar pasandole el trabajo del select
+                actualizarSalarios(indiceSeleccionado);
+            })
+        });
+
+        function loadOficios (){
+            var request = "api/Empleados/GetOficios/oficios";
+            $.getJSON(url + request,
+                function (data) {
+                    console.log(data);
+                    //añado cada oficio como option al select
+                    $.each(data, function (indice, oficio) { 
+                        var option = $("<option>", {"text": oficio, "value": oficio});
+                        $("#selectoficio").append(option);
+                    });  
+                }
+            );
+        };
+
+        function mostrardatostabla(indiceSeleccionado){
+            var request = "api/Empleados/GetEmpleadosOficio/empleadosoficio/" + indiceSeleccionado;
+            $.getJSON(url + request,
+                function (data) {
+                    console.log(data);
+                    var html = "";
+                    $.each(data, function (indice, empleado) { 
+                        html += "<tr>";
+                        html += "<td>" + empleado.apellido + "</td>";
+                        html += "<td>" + empleado.oficio + "</td>";
+                        html += "<td>" + empleado.salario + "</td>";
+                        html += "</tr>";
+                    });
+                    $("#empleados tbody").html(html);
+                }
+            );
+        }
+
+        function actualizarSalarios(indiceSeleccionado) {
+            console.log("INDICE SELECCIONADO " + indiceSeleccionado);
+            var incremento = $("#cajaincremento").val();
+            console.log("Incremento a sumar " + incremento)
+            var request = "api/Empleados/IncrementarSalarioOficios/" + indiceSeleccionado + "/" + incremento;
+            
+            $.ajax({
+                type: "PUT",
+                url: url + request,
+                success: function (response) {
+                    mostrardatostabla(indiceSeleccionado);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
