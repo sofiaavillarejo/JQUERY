@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lanzar dados</title>
+</head>
+<body>
+    <h1>¡Lanza los dados!</h1>
+    <h2 id="resultado"></h2>
+    <button id="btnlanzar">¡Lanza!</button>
+    <h4>últimos resultados:</h4>
+    <ul id="anteriores">
+
+    </ul>
+
+    <script src="/js/jquery-3.7.1.js"></script>
+    <script>
+        $(document).ready(function () {
+            var numeros = [];
+            $("#btnlanzar").click(function () { 
+                //genero 1 numero random para cada dado
+                var dado = Math.floor(Math.random() * 6) + 1;
+                var dado2 = Math.floor(Math.random() * 6) + 1;
+                console.log(dado, dado2);
+                //añado al array creado anteriormente los resultados del random
+                numeros.push([dado,dado2]);
+                console.log(numeros);
+                //muestro en el h2 el resultado
+                $("#resultado").text("Dado 1= " + dado  + " Dado 2= " + dado2);
+                //mostrar resultados anteriores
+                var html = "";
+                //recorro la longitud del array
+                for (let i = 0; i < numeros.length; i++) {
+                    html += "<li>Dado1= " + numeros[i][0] + ", Dado2= " + numeros[i][1] + "</li>";
+                }
+                //muestro los resultados anteriores en una lista
+                $("#anteriores").html(html);
+            });
+           
+
+        });
+    </script>
+</body>
+</html>

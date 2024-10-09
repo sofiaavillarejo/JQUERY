@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <titleprop()</title>
+</head>
+<body>
+    <!-- Crear un form con un checkbox y un btn de envío deshabilitado inicialmente
+        -Cuando se cambia el estado del checkbox, se verifica si esta marcado
+        -Si está marcado, el btn se habilita y sino, permanece deshabilitado -->
+    <h1>Probando atributos sin valor</h1>
+    <form id="formulario">
+        <input type="checkbox" name="aceptar" id="checkbox"/>
+        <label for="">Clicar para que se active el boton</label>
+        <button id="miBtn" disabled>Cargar datos</button><br>
+        <hr>
+        <div id="contenedor" style="display: none;">
+        <h1>Generar imágenes</h1>
+            <input type="range" name="" id="rango" min="1" max="10" value="1"/>
+            <span id="valorrango"></span><br>
+        </div>
+        <div id="contenedorimg"></div>
+    </form>
+    <script src="/js/jquery-3.7.1.js"></script>
+    <script>
+        $(function () {
+            //compruebo el atributo sin valor del boton
+            var btn = $("#miBtn").prop("disabled");
+            console.log(btn); //imprime true en consola porque al iniciar, el boton está deshabilitado
+
+            $("#checkbox").change(function () { 
+                var check = $(this).prop("checked");
+                if (check){
+                    console.log("hola");
+                    $("#miBtn").prop("disabled", false); //habilita el boton 
+                    clickBtn();
+                } else {
+                    $("#miBtn").prop("disabled", true); //deshabilita el boton 
+                    
+                }
+                
+            });
+        });
+
+        function clickBtn(){
+            var btnCargar = $("#miBtn");
+            $(btnCargar).click(function (e) { 
+                e.preventDefault();
+                var div = $("#contenedor").css("display", "block");
+            });
+            controlarRango();
+        }
+
+        function controlarRango(){
+            $("#rango").change(function(){
+                var numeroRango = $("#rango").val();
+                console.log(numeroRango);
+                var rangotext = $("#valorrango").text(numeroRango);
+                $("#contenedorimg").text("");
+                for (let i = 0; i < numeroRango; i++) {
+                    var imagen = $("<img>", {"src" : "/images/gato1.jpg", "style":"width : 150px"});
+                    $(imagen).appendTo("#contenedorimg");
+                }
+            });
+        }
+    </script>
+</body>
+</html>
