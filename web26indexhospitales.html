@@ -104,7 +104,7 @@
                 }
             );
         });
-        //¿De donde viene el idHospital?
+        //¿De donde viene el idHospital? -> se le pasa en el onClcik del link de la tabla creada en el doc.ready
         function deleteHospital(idHospital){
             request = "/webresources/hospitales/delete/" + idHospital;
             Swal.fire({

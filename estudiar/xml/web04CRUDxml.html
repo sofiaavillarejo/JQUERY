@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD con XML</title>
+</head>
+<body>
+    <h1>CRUD XML</h1>
+    <label>ID dpto</label>
+    <input type="text" id="cajaid" /><br><br>
+    <label>Nombre dpto</label>
+    <input type="text" id="cajanombre" /><br><br>
+    <label>Localidad</label>
+    <input type="text" id="cajalocalidad" /><br><br>
+
+    <table id="tabladatos" border="1">
+        <thead>
+            <tr>
+                <td>ID</td>
+                <td>Nombre</td>
+                <td>Localidad</td>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <hr>
+    <button id="btninsertar">Insertar</button>
+    <button id="btnupdate">Update</button>
+    <button id="btndelete">Delete</button>
+
+    <script src="./../../js/jquery-3.7.1.js"></script>
+    <script>
+        var url = "https://apicruddepartamentosxml.azurewebsites.net/";
+        $(document).ready(function () {
+            loadDepartamentos();
+            //INSERTAR
+            $("#btninsertar").click(function () { 
+                var id = $("#cajaid").val();
+                var nombre = $("#cajanombre").val();
+                var localidad = $("#cajalocalidad").val();
+
+                var dataXML = getDepartamentos(id, nombre, localidad);
+                console.log(dataXML);//compruebo que estoy enviando
+
+                var request = "api/Departamentos"
+                $.ajax({
+                    type: "POST",
+                    url: url + request,
+                    data: dataXML,
+                    contentType: "text/xml",
+                    success: function () {
+                        loadDepartamentos();
+                    }
+                });
+            });
+
+            $("#btnupdate").click(function (e) { 
+                e.preventDefault();
+                var id = $("#cajaid").val();
+                var nombre = $("#cajanombre").val();
+                var localidad = $("#cajalocalidad").val();
+                var dataXML = getDepartamentos(id, nombre, localidad);
+                var request = "api/Departamentos";
+                $.ajax({
+                    type: "PUT",
+                    url: url + request,
+                    data: dataXML,
+                    contentType: "text/xml",
+                    success: function () {
+                        console.log("Modificado");
+                        loadDepartamentos();
+                    }
+                });
+            });
+
+            $("#btndelete").click(function (e) { 
+                e.preventDefault();
+                var id = $("#cajaid").val();
+                var request = "api/Departamentos/" + id;
+
+                $.ajax({
+                    type: "DELETE",
+                    url: url + request,
+                    success: function () {
+                        console.log("borrado");
+                        loadDepartamentos();
+                    }
+                });
+            });
+        });
+
+        function loadDepartamentos(){
+            var request = "api/departamentos";
+            $.get(url + request,
+                function (data) {
+                    console.log(data);
+                    var html = "";
+    
+                    $(data).find("Departamento").each(function(){
+                        var id = $(this).find("IdDepartamento").text();
+                        var nombre = $(this).find("Nombre").text();
+                        var localidad = $(this).find("Localidad").text();
+    
+                        html += "<tr>";
+                        html += "<td>" + id + "</td>";
+                        html += "<td>" + nombre + "</td>";
+                        html += "<td>" + localidad + "</td>";
+                        html += "</tr>";
+                    });
+                    $("#tabladatos tbody").html(html);
+                }
+            );
+        }
+
+        function getDepartamentos(id, nombre, localidad){
+            var dataXML = "<Departamento>";
+                dataXML += "<IdDepartamento>" + id + "</IdDepartamento>";
+                dataXML += "<Nombre>" + nombre + "</Nombre>";
+                dataXML += "<Localidad>" + localidad + "</Localidad>";
+                dataXML += "</Departamento>";
+            return dataXML;
+        };
+
+        function updateDepartamentos (){
+
+        }
+    </script>
+</body>
+</html>

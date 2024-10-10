@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filtros con XML</title>
+</head>
+<body>
+    <h1>Aplicando filtros con XML</h1>
+    <label for="">Introduzca ID</label>
+    <input type="text" id="cajaid" />
+    <button id="btnid">Buscar departamento</button>
+    <hr>
+    <label for="">Introduzca localidad</label>
+    <input type="text" id="cajalocalidad" />
+    <button id="btnlocalidad">Buscar localidades</button>
+    <h1 id="mensaje"></h1>
+    <il id="listadptos"></il>
+    <script src="./../../js/jquery-3.7.1.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#btnid").click(function () { 
+                var id = $("#cajaid").val();
+                $.get("./../../documents/departamentos.xml",
+                function (data) {
+                    console.log(data);
+                    //creamos el filtro para buscar 
+                    var filtro = "DEPT[DEPT_NO="+ id + "]";
+                    //Como el id es único, no se hace each
+                    var nododpt = $(data).find(filtro).first(); //busco el primer nodo coincidente con el filtro
+                    var nombre = $(nododpt).find("DNOMBRE").text() //dentro del nodo encontrado, saco su nombre
+                    var localidad = $(nododpt).find("LOC").text();
+
+                    $("#mensaje").text("Departamento: "+ nombre + ", Localidad: " + localidad);
+                });
+            });
+            $("#btnlocalidad").click(function () { 
+                var localidad = $("#cajalocalidad").val();
+                $.get("./../../documents/departamentos.xml",
+                    function (data) {
+                        var filtro = "LOC:contains(" + localidad + ")";
+                        var html = "";
+                        console.log(data);
+                        $(data).find(filtro).each(function(){
+                        //devuelve la localidad, asi que tengo que acceder al padre para tener toda la info
+                           console.log($(this).text());
+                           //saco el nodo padre de las etiquetas filtradas
+                           var nododpt = $(this).parent();
+                           console.log(nododpt.text());
+                           var id = nododpt.attr("DEPT_NO");
+                           var nombre = nododpt.find("DNOMBRE").text();
+                           
+                           html += "<li>ID: " + id + ", Dpto: " + nombre + "</li>";
+                        });
+                        $("#listadptos").html(html);
+                    ;}
+                );
+            });
+        });
+    </script>
+</body>
+</html>

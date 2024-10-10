@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Probando data-key</title>
+</head>
+<body>
+    <!-- data-key es útil 
+    cuando necesitas asociar datos con elementos HTML de manera 
+    que puedas recuperarlos fácilmente con JavaScript sin afectar 
+    la apariencia ni la estructura de tu HTML. -->
+
+    <!-- Ejemplo 1
+     Lista de productos en los que quiero obtener el valor del data-key cuando haga click en uno de ellos
+    -->
+    <ul id="lista">
+        <li data-id="1">Producto 1</li>
+        <li data-id="2">Producto 2</li>
+        <li data-id="3">Producto 3</li>
+    </ul>
+    <div id="contenedor"></div>
+    <script src="./../js/jquery-3.7.1.js"></script>
+    <script>
+        // $(document).ready(function () {
+        //     $("li").click(function (e) { 
+        //         e.preventDefault();
+        //         var id = $(this).data("id");
+        //         console.log(id);
+        //         var html = "";
+        //         $(this).each(function () {
+        //             html += "<p>ID del producto: " + id + "</p>";
+        //         });
+        //         $("#contenedor").append(html);
+        //     });
+        // });
+
+        //  Ejemplo 2 
+        //  Filtrar elementos con data-key: queremos resaltar un producto de la lista
+        // Al clicar en el elemento que tenga como id el valor de datra key buscado, su fondo se pone azul
+        $(document).ready(function () {
+            var key = "2";
+            $("li").click(function (e) { 
+                e.preventDefault();
+                var id = $(this).data("id");
+                if (key == id){
+                    $(this).css("background-color", "blue");
+                    //cambio el valor del data-id
+                    $(this).data("id", "222");
+                    //recupero el nuevo valor del data-id
+                    var nuevoid = $(this).data("id");
+                    //creo el p con el nuevo valor
+                    var text = "<p>Ahora el nuevo id del producto es: " + nuevoid + "</p>";
+                    console.log(text);
+                    //muestro el p en el html
+                    $("#contenedor").append(text);
+                }
+            });
+        });
+
+        // EJERCICIO WEB16CLIENTESXML.HMTL
+    </script>
+</body>
+</html>

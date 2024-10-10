@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XML</title>
+</head>
+<body>
+    <h1>XML Departamentos</h1>
+    <button id="cargar">Cargar datos del servicio</button>
+    <table id="tabla" border="1">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nombre</th>
+                <th>Localidad</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <script src="./../../js/jquery-3.7.1.js"></script>
+    <script>
+        $(document).ready(function () {
+            var url = "https://apicruddepartamentosxml.azurewebsites.net";
+            $("#cargar").click(function (e) { 
+                e.preventDefault();
+                var request = "/api/Departamentos"
+                $.get(url + request,
+                    function (data) {
+                        console.log(data);
+                        var html = "";
+                        //recorro cada elemento "Departamento" del servicio
+                        $(data).find("Departamento").each(function () { 
+                            console.log($(this).text());
+                            //sacamos datos de cada dpto
+                            var id = $(this).find("IdDepartamento").text();
+                            var nombre = $(this).find("Nombre").text();
+                            var localidad = $(this).find("Localidad").text();
+                            html += "<tr>";
+                            html += "<td>" + id + "</td>";
+                            html += "<td>" + nombre + "</td>";
+                            html += "<td>" + localidad + "</td>";
+                            html += "</tr>"; 
+                        })
+                       
+                        $("#tabla tbody").html(html);
+                    }
+                );
+                
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD JSON</title>
+</head>
+<body>
+    <h1>CRUD dptos JSON</h1>
+    <label for="">Id dpto</label>
+    <input type="text" id="cajaid" />
+    <label for="">Nombre</label>
+    <input type="text" id="cajanombre">
+    <label for="">Localidad</label>
+    <input type="text" id="cajalocalidad">
+    <button id="insertar">Insertar</button>
+    <button id="modificar">Modificar</button>
+    <button id="delete">Borrar</button>
+    <hr>
+    <table id="tabla">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nombre</th>
+                <th>Localidad</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script src="./../../js/jquery-3.7.1.js"></script>
+    <script>
+        var url = "https://apicruddepartamentoscore.azurewebsites.net/";
+        var request = "api/Departamentos";
+        $(document).ready(function () {
+            loadDptos();
+            $("#insertar").click(function (e) { 
+                e.preventDefault();
+                insertar();
+            });
+
+            $("#modificar").click(function (e) { 
+                e.preventDefault();
+                update();
+            });
+            $("#delete").click(function (e) { 
+                e.preventDefault();
+                eliminar();
+            });
+        });
+
+        function loadDptos (){
+            var html = "";
+            $.getJSON(url + request,
+                function (data) {
+                    console.log(data);
+                    $.each(data, function (index, departamento) { 
+                        var id = departamento.numero;
+                        var nombre = departamento.nombre;
+                        var localidad = departamento.localidad;
+                        html += "<tr>";
+                            html += "<td>"+ id + "</td>";
+                            html += "<td>"+ nombre + "</td>";
+                            html += "<td>"+ localidad + "</td>";
+                        html += "</tr>";
+                        $("#tabla tbody").html(html);
+                    });
+                }
+            );
+        }
+
+        function insertar(){
+            var id = $("#cajaid").val();
+            var nombre = $("#cajanombre").val();
+            var localidad = $("#cajalocalidad").val();
+            var dpto = new Object();
+            dpto.numero = parseInt(id);
+            dpto.nombre = nombre;
+            dpto.localidad = localidad;
+
+            var dataJson = JSON.stringify(dpto);
+            console.log(dataJson);
+            $.ajax({
+                type: "POST",
+                url: url + request,
+                data: dataJson,
+                //TENER CUIDADO CON ESTO!!!! ES CONTENTTYPE!!
+                contentType: "application/json",
+                success: function () {
+                    console.log("Dpto insertado");
+                    loadDptos();
+                }
+            });
+        }
+
+        function update(){
+            var id = $("#cajaid").val();
+            var nombre = $("#cajanombre").val();
+            var localidad = $("#cajalocalidad").val();
+            var dpto = new Object();
+            dpto.numero = parseInt(id);
+            dpto.nombre = nombre;
+            dpto.localidad = localidad;
+
+            var dataJson = JSON.stringify(dpto);
+            console.log(dataJson);
+            $.ajax({
+                type: "PUT",
+                url: url + request,
+                data: dataJson,
+                contentType: "application/json",
+                success: function () {
+                    console.log("Dpto modificado");
+                    loadDptos();
+                }
+            });
+        }
+
+        function eliminar(){
+            var id = $("#cajaid").val();
+            var request = "api/departamentos/"+ id;
+            $.ajax({
+                type: "DELETE",
+                url: url + request,
+                success: function () {
+                    console.log("Dpto eliminado");
+                    loadDptos();
+                }
+            });
+        }
+    </script>
+</body>
+</html>

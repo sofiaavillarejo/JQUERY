@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filtrando doctores xml</title>
+</head>
+<body>
+    <h1>Filtrando doctores</h1>
+    <select id="selectdoctores"></select>
+    <div id="contenedor"></div>
+
+    <script src="./../../js/jquery-3.7.1.js"></script>
+    <script>
+        $(document).ready(function () {
+            var url = "https://apicruddoctoresxml.azurewebsites.net/"
+            var request = "api/doctores";
+
+            $.get(url + request,
+                function (data) {
+                    console.log(data);
+                    //recorro el servicio de doctores buscando la etiqueta doctor
+                    $(data).find("Doctor").each(function () {  
+                        console.log($(this).text());
+                        //saco los valores de las distintas etiquetas
+                        var apellido = $(this).find("Apellido").text();
+                        var especialidad = $(this).find("Especialidad").text();
+                        var iddoctor = $(this).find("IdDoctor").text();
+                        var idhospital = $(this).find("IdHospital").text();
+                        var salario = $(this).find("Salario").text();
+                        //creo dinamicamente el option y almaceno el dato de cada doctor en un data-key para luego recuperar la info
+                        var option = $("<option>", {"value": apellido, "data-especialidad": especialidad, "data-iddoctor": iddoctor, "data-idhospital": idhospital, "data-salario": salario}).text(apellido);
+                        //añado los option al select con el valor del apellido de cada doctor
+                            $("#selectdoctores").append(option);
+                    })
+                    
+                    $("#selectdoctores").change(function () { 
+                        //buscamos el option seleccionado
+                        var optionseleccionado = $(this).find("option:selected");
+                        //sacamos el valor del option
+                        var apellidos = optionseleccionado.val();
+                        //recuperamos los data con los valores de cada uno
+                        var especialidad = optionseleccionado.data("especialidad");
+                        var iddoctor = optionseleccionado.data("iddoctor");
+                        var idhospital = optionseleccionado.data("iddoctor");
+                        var salario = optionseleccionado.data("salario");
+                        //pintamos el texto con los datos
+                        var text = "<p>Apellidos: "+ apellidos + ", Especialidad: " + especialidad + ", ID del doctor: " + iddoctor + ", Id del hospital: " + ", Salario: " + salario + "</p>";
+                        //lo añadimos al div para que se muestre en la página
+                        $("#contenedor").append(text);
+
+                    });
+                }
+            );
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filtros alumnos xml</title>
+</head>
+<body>
+<!-- mostrar en la tabla a los alumnos que tengan una nota igual o superior que la escrita
+    en la caja -->
+    <h1>Filtrando alumnos XML</h1>
+    <label for="">Introduzca nota</label>
+    <input type="text" id="cajanota" />
+    <button id="buscar">Buscar alumnos</button> 
+
+    <table id="alumnos">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Apellidos</th>
+                <th>Nota</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script src="./../../js/jquery-3.7.1.js"></script>
+    <script>
+        $(document).ready(function () {
+            $.get("./../../documents/alumnos.xml",
+                function (data) {
+                    console.log(data);
+                    $("#buscar").click(function () { 
+                        var notaAlum = parseInt($("#cajanota").val());
+                        var html ="";
+                        $(data).find("alumno").each(function () { 
+                            var nombre = $(this).find("nombre").text();
+                            var apellidos = $(this).find("apellidos").text();
+                            var nota = $(this).find("nota").text();
+                            if (nota >= notaAlum){
+                                html += "<tr>";
+                                html += "<td>" + nombre + "</td>";
+                                html += "<td>" + apellidos + "</td>";
+                                html += "<td>" + nota + "</td>";
+                                html += "</td>";
+                            }
+                            $("#alumnos tbody").html(html);
+                        })
+                        
+                    });
+                }
+            );
+        });
+    </script>
+</body>
+</html>
