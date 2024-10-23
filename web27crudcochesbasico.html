@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD coches</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+<body>
+    <h1>CRUD coches JSON</h1>
+    <form>
+        <label for="">Id</label>
+        <input class="form-control" type="text" id="cajaid"/>
+        <label for="">Marca</label>
+        <input class="form-control" type="text" id="cajamarca"/>
+        <label for="">Modelo</label>
+        <input class="form-control" type="text" id="cajamodelo"/>
+        <label for="">Conductor</label>
+        <input class="form-control" type="text" id="cajaconductor"/>
+        <label for="">Imagen</label>
+        <input class="form-control" type="text" id="cajaimagen"/>
+        <div style="margin-top: 20px;">
+            <button id="btnInsert" class="btn btn-info">Insertar</button>
+            <button id="btnUpdate" class="btn btn-warning">Modificar</button>
+            <button id="btnDelete" class="btn btn-danger">Eliminar</button>
+        </div>
+    </form>
+    
+    <hr>
+    <table id="tabla" class="table table-hover table-bordered">
+        <thead class="table table-success">
+            <tr>
+                <th>Id</th>
+                <th>Marca</th>
+                <th>Modelo</th>
+                <th>Conductor</th>
+                <th>Imagen</th>
+            </tr>
+        </thead>
+        <tbody class="table table-active"></tbody>
+    </table>
+</body>
+</html>
+
+<script src="js/jquery-3.7.1.js"></script>
+<script>
+    var url = "https://apiejemplos.azurewebsites.net/";
+    $(function () {
+        loadCoches();
+
+        //una vez tenemos todos los coches del servicio cargados y creados, hacemos el insert
+        $("#btnInsert").click(function (e) { 
+            e.preventDefault();
+            //guardo en una variable la funcion reutilizable de crear el objeto para usarlo
+            var dataJson = ObjetoCoche();
+            //request para insertar el objeto
+            var request = "api/Coches/InsertCoche";
+
+            $.ajax({
+                type: "POST",
+                url: url + request ,
+                data: dataJson,
+                contentType: "application/json",
+                success: function () {
+                    console.log("coche insertado");
+                    //actualizo la pagina llamadno a la funcion que carga los coches
+                    loadCoches();
+                }
+            });
+        });
+
+        $("#btnUpdate").click(function (e) { 
+            e.preventDefault();
+            var dataJson = ObjetoCoche();
+            //request para modificar
+            var request = "api/Coches/UpdateCoche";
+            $.ajax({
+                type: "PUT",
+                url: url + request,
+                data: dataJson,
+                contentType: "application/json",
+                success: function () {
+                    console.log("Coche modificado");
+                    loadCoches();
+                }
+            });
+        });
+        
+        $("#btnDelete").click(function (e) { 
+            e.preventDefault();
+            var id = $("#cajaid").val();
+            var request = "api/Coches/DeleteCoche/" + id;
+            $.ajax({
+                type: "DELETE",
+                url: url + request,
+                success: function (response) {
+                    console.log("Coche eliminado");
+                    loadCoches();
+                }
+            });
+        });
+    });
+
+    function loadCoches() { 
+        var request = "api/Coches";
+        
+        $.ajax({
+            type: "GET",
+            url: url + request,
+            success: function (data) {
+                console.log(data);
+                var html = "";
+                $.each(data, function (index, coche) { 
+                    html += "<tr>";
+                    html += "<td>" + coche.idCoche + "</td>";
+                    html += "<td>" + coche.marca + "</td>";
+                    html += "<td>" + coche.modelo + "</td>";
+                    html += "<td>" + coche.conductor + "</td>";
+                    html += "<td><img style=width:150px src='" + coche.imagen + "'/></td>";
+                });
+                $("#tabla tbody").html(html);
+            }
+        });
+    }
+
+    //funcion reutilizable para sacar valores de los inputs y crear el objeto para insertar y modificar
+    function ObjetoCoche() {  
+        //creo el objeto json para añadir al servicio
+        var cajaid = $("#cajaid").val();
+        var cajamarca = $("#cajamarca").val();
+        var cajamodelo = $("#cajamodelo").val();
+        var cajaconductor = $("#cajaconductor").val();
+        var cajaimagen = $("#cajaimagen").val();
+        var coche = new Object();
+        coche.idCoche = parseInt(cajaid);
+        coche.marca = cajamarca;
+        coche.modelo = cajamodelo;
+        coche.conductor = cajaconductor;
+        coche.imagen = cajaimagen;
+        //convertir el objeto a json
+        var dataJson = JSON.stringify(coche);
+        return dataJson;
+    }
+
+
+
+</script>

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD coches avanzado</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+<body>
+    <h1>CRUD coches JSON Avanzado</h1>
+    <button id="btnCargarTodo" class="btn btn-success">Cargar datos</button>
+    <hr/>
+    <form>
+        <label for="">Id</label>
+        <input class="form-control" type="text" id="cajaid"/>
+        <label for="">Marca</label>
+        <input class="form-control" type="text" id="cajamarca"/>
+        <label for="">Modelo</label>
+        <input class="form-control" type="text" id="cajamodelo"/>
+        <label for="">Conductor</label>
+        <input class="form-control" type="text" id="cajaconductor"/>
+        <label for="">Imagen</label>
+        <input class="form-control" type="text" id="cajaimagen"/>
+        <div style="margin-top: 20px;">
+            <button id="btnInsert" class="btn btn-info">Insertar</button>
+            <button id="btnUpdate" class="btn btn-warning">Modificar</button>
+            <button id="btnDelete" class="btn btn-danger">Eliminar</button>
+        </div>
+    </form>
+    <hr/>
+    <form style="display: flex; align-items: center; gap: 15px;">
+        <label>Buscar por id</label>
+        <input style="width: 10%;" class="form-control" type="text" id="cajaidBuscar"/>
+        <button id="btnBuscar" class="btn btn-success">Buscar</button>
+        <select id="selectMarca">
+            
+        </select>
+    </form>
+    <hr>
+    <table id="tabla" class="table table-hover table-bordered">
+        <thead class="table table-success">
+            <tr>
+                <th>Id</th>
+                <th>Marca</th>
+                <th>Modelo</th>
+                <th>Conductor</th>
+                <th>Imagen</th>
+            </tr>
+        </thead>
+        <tbody class="table table-active"></tbody>
+    </table>
+</body>
+</html>
+
+<script src="js/jquery-3.7.1.js"></script>
+<script>
+    var url = "https://apiejemplos.azurewebsites.net/";
+    var coches = [] //array para almacenar coches
+
+    $(document).ready(function () {
+        //BTN PARA CLICAR Y QUE SE CARGUEN LOS DATOS DE LA API
+        $("#btnCargarTodo").click(function (e) { 
+            e.preventDefault();
+            loadCoches();
+        });
+        //AL CLICAR EN BUSCAR, FILTRA LOS COCHES Y LOS SACA POR ID
+        $("#btnBuscar").click(function (e) { 
+            e.preventDefault();
+            var id = $("#cajaidBuscar").val();
+            console.log(id);
+            var request = "api/Coches/FindCoche/" + id;
+            $.ajax({
+                type: "GET",
+                url: url + request,
+                success: function (data) {
+                    console.log(data);
+                    if (data){
+                        $("#tabla tbody").empty(); // Limpiar la tabla
+                            var html = `
+                                <tr>
+                                    <td>${data.idCoche}</td>
+                                    <td>${data.marca}</td>
+                                    <td>${data.modelo}</td>
+                                    <td>${data.conductor}</td>
+                                    <td><img style="width:160px" src='${data.imagen}' alt="Imagen de ${data.marca} ${data.modelo}"/></td>
+                                </tr>
+                            `;
+                        $("#tabla tbody").html(html);
+                    }
+                }
+            });
+        });
+
+        $("#btnInsert").click(function (e) { 
+            e.preventDefault();
+            let cajaid = parseInt($("#cajaid").val());
+            var cajamarca = $("#cajamarca").val();
+            var cajamodelo = $("#cajamodelo").val();
+            var cajaconductor = $("#cajaconductor").val();
+            var cajaimagen = $("#cajaimagen").val();
+            var request = "api/Coches/InsertCoche";
+            var coche = new Object();
+            coche.idCoche = cajaid;
+            coche.marca = cajamarca;
+            coche.modelo = cajamodelo;
+            coche.conductor = cajaconductor;
+            coche.imagen = cajaimagen;
+            var dataJson = JSON.stringify(coche);
+            
+            $.ajax({
+                type: "POST",
+                url: url + request,
+                data: dataJson,
+                contentType: "application/json",
+                success: function (data) {
+                    console.log("Coche insertado");
+                    loadCoches();
+                }
+            });
+        });
+
+        $("#btnUpdate").click(function (e) { 
+            e.preventDefault();
+            let cajaid = parseInt($("#cajaid").val());
+            var cajamarca = $("#cajamarca").val();
+            var cajamodelo = $("#cajamodelo").val();
+            var cajaconductor = $("#cajaconductor").val();
+            var cajaimagen = $("#cajaimagen").val();
+            var request = "api/Coches/UpdateCoche";
+            var coche = new Object();
+            coche.idCoche = cajaid;
+            coche.marca = cajamarca;
+            coche.modelo = cajamodelo;
+            coche.conductor = cajaconductor;
+            coche.imagen = cajaimagen;
+            var dataJson = JSON.stringify(coche);
+            
+            $.ajax({
+                type: "PUT",
+                url: url + request,
+                data: dataJson,
+                contentType: "application/json",
+                success: function (data) {
+                    console.log("Coche modificado");
+                    loadCoches();
+                }
+            });
+        });
+        //eliminar por ID con endpoint
+        $("#btnDelete").click(function (e) { 
+            e.preventDefault();
+            var id = $("#cajaid").val();
+            var request = "api/Coches/DeleteCoche/" + id;
+            $.ajax({
+                type: "DELETE",
+                url: url + request,
+                success: function () {
+                    console.log("Coche eliminado");
+                    loadCoches();
+                }
+            });
+        });
+
+        //FILTRAR SEGUN LA MARCA SELECCIONADA DEL SELECT
+        $("#selectMarca").change(function (e) { 
+            e.preventDefault();
+            var marca = $(this).val();
+            if (marca) {
+                var request = "api/Coches"
+                $.getJSON(url + request,
+                    function (data) {
+                        // Filtramos los coches por la marca seleccionada
+                        var cochesFiltrados = data.filter(coche => coche.marca == marca);
+                        console.log("Coches filtrados:", cochesFiltrados);
+                        var html = "";
+                        $.each(cochesFiltrados, function (index, coche) { 
+                            html += `
+                                <tr>
+                                    <td>${coche.idCoche}</td>
+                                    <td>${coche.marca}</td>
+                                    <td>${coche.modelo}</td>
+                                    <td>${coche.conductor}</td>
+                                    <td><img style="width:160px" src='${coche.imagen}'/></td>
+                                </tr>
+                            `;
+                        });
+                        $("#tabla tbody").html(html); // Limpiamos la tabla y añadimos los coches filtrados
+                    }
+                );
+            }
+        });
+    });
+
+
+    function loadCoches(){
+        var request = "api/Coches";
+        var html = "";
+        $.getJSON(url + request,
+            function (data) {
+                console.log(data);
+                coches = data;
+                console.log(coches + "AQUIII")
+                $("#selectMarca").empty();
+                $.each(data, function (index, coche) { 
+                    var marca = coche.marca;
+                    console.log(marca);
+                    var option = $("<option>", {"text": marca, "value": marca});
+                    $("#selectMarca").append(option);
+                    html += `
+                        <tr>
+                            <td>${coche.idCoche}</td>
+                            <td>${coche.marca}</td>
+                            <td>${coche.modelo}</td>
+                            <td>${coche.conductor}</td>
+                            <td><img style="width:160px" src='${coche.imagen}'/></td>
+                    `;
+
+                });
+                $("#tabla tbody").html(html);
+            }
+        );
+    }
+    
+
+
+</script>
