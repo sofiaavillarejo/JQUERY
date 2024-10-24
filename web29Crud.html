@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD completo</title>
+    <link rel="stylesheet" href="./../css/bootstrap.min.css">
+</head>
+
+<body>
+    <div>
+        <nav class="navbar navbar-expand-sm navbar-dark bg-dark" aria-label="Third navbar example">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="web29Crud.html">Hospitales</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarsExample03" aria-controls="navbarsExample03" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarsExample03">
+                    <ul class="navbar-nav me-auto mb-2 mb-sm-0">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="/web29Crud.html">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="web29CrudCrearDoctor.html">Crear doctor</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">Doctores</a>
+                            <ul id="navdoctores" class="dropdown-menu">
+                               
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <div class="mt-3 w-50 container text-center">
+        <form>
+            <select class="form-select" id="selectHospital"></select>
+        </form>
+    </div>
+    <div class="containerData d-flex justify-content-center gap-5 m-4"></div>
+
+    <script src="./../js/jquery-3.7.1.js"></script>
+    <script src="https://kit.fontawesome.com/6f5f758826.js" crossorigin="anonymous"></script>
+    <script>
+        let url = "https://apiejemplos.azurewebsites.net/";
+        $(document).ready(function () {
+            loadHospitales();
+
+            $("#selectHospital").change(function (e) { 
+                e.preventDefault();
+                loadDoctoresPorHospital();
+            });
+
+            
+        });
+
+        function loadHospitales(){
+            let request = "api/Hospitales";
+            $.getJSON(url + request,
+                function (data) {
+                    console.log(data);
+                    $.each(data, function (index, hospital) { 
+                        var option = $("<option>", {"text": hospital.nombre, "value": hospital.idHospital});
+                        $("#selectHospital").append(option);
+                    });
+                }
+            );
+        }
+
+        function loadDoctoresPorHospital(){
+            let optionSelectId = $("#selectHospital").val();
+            console.log(optionSelectId);
+            let request ="api/Doctores/DoctoresHospital/" + optionSelectId;
+            var html = "";
+            $.ajax({
+                type: "GET",
+                url: url + request,
+                success: function (data) {
+                    console.log(data);
+                    $.each(data, function (index, doctor) { 
+                         html += `
+                            <div class="card" style="width: 18rem;">
+                                <div class="card-body">
+                                    <h5 class="card-title text-center">${doctor.apellido}</h5>
+                                    <p class="card-text text-center">${doctor.idDoctor}, ${doctor.especialidad}</p>
+                                    <a href='web29CrudDetalleDoctor.html?iddoctor=${doctor.idDoctor}'>Detalles</a>
+                                    <a href='web29CrudModificarDoctor.html?iddoctor=${doctor.idDoctor}'>Modificar</a>
+                                    <a href='#' onClick='borrarDoctor(${doctor.idDoctor})'>Eliminar</a>
+
+                                </div>
+                            </div>
+                        `
+                    });
+                    $(".containerData").html(html);
+                }
+            });
+        }
+
+        function borrarDoctor(iddoctor){
+            let request = "api/Doctores/" + iddoctor;
+            $.ajax({
+                  type: "DELETE",
+                  url: url + request,
+                  success: function () {
+                    console.log("Doctor borrado con éxito");
+                    window.location.reload();
+                  }
+            });
+        }
+    </script>
+    
+</body>
+
+</html>
